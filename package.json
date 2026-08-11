@@ -1,0 +1,26 @@
+{
+  "name": "project-app",
+  "version": "1.0.0",
+  "description": "A simple REST API where users can be created, and managed, products can be created, and managed, reviews can be left on products.",
+  "homepage": "https://github.com/koechy77/group-backend-project#readme",
+  "bugs": {
+    "url": "https://github.com/koechy77/group-backend-project/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koechy77/group-backend-project.git"
+  },
+  "license": "ISC",
+  "author": "Koechy77, Mabel, Anonymous",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.9.2"
+  }
+}
