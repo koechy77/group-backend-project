@@ -54,4 +54,15 @@ const productSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+productSchema.virtual("reviews", {
+  ref: "Review",
+  localField: "_id",
+  foreignField: "productID",
+});
+
+// include virtuals when converting to JSON for resOBJs
+productSchema.set("toJSON", { virtuals: true });
+// include virtuals when converting to Objects for resOBJs
+productSchema.set("toObject", { virtuals: true });
+
 module.exports = productSchema;

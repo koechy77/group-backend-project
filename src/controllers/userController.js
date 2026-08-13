@@ -39,9 +39,9 @@ exports.getAllUsers = async (req, res) => {
 exports.getUser = async (req, res) => {
   try {
     console.log("requested at:", req.requestTime); // Log the request time for debugging
-    console.log("requested id:", req.params.id); // Log the requested user ID for debugging
+    console.log("requested id:", req.params.userId); // Log the requested user ID for debugging
 
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.params.userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -56,10 +56,10 @@ exports.getUser = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
     console.log("requested at:", req.requestTime); // Log the request time for debugging
-    console.log("requested id:", req.params.id); // Log the requested user ID for debugging
+    console.log("requested id:", req.params.userId); // Log the requested user ID for debugging
     console.log("Request body:", req.body); // Log the request body for debugging
 
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+    const user = await User.findByIdAndUpdate(req.params.userId, req.body, {
       new: true,
     });
 
@@ -80,9 +80,9 @@ exports.updateUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     console.log("requested at:", req.requestTime); // Log the request time for debugging
-    console.log("requested id:", req.params.id); // Log the requested user ID for debugging
+    console.log("requested id:", req.params.userId); // Log the requested user ID for debugging
 
-    const user = await User.findByIdAndDelete(req.params.id);
+    const user = await User.findByIdAndDelete(req.params.userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
