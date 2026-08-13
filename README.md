@@ -21,16 +21,35 @@ A simple backend API for managing users, products, and product reviews.
 
 ## Getting started
 
-1. Install dependencies:
-   npm install
-2. Create a `.env` file in the project root with at least:
-   - `DATABASE_URL` — your MongoDB connection URI
-   - `PORT` — optional server port
-3. Start the app:
-   - `npm start`
-   - or `npm run dev` for live reload
+### Prerequisites
 
-> Note: `npm run dev` uses `nodemon`. If you don't have it installed globally, install it locally or globally with `npm install -g nodemon`.
+- Node.js (v14 or higher)
+- MongoDB instance (local or cloud)
+
+### Installation
+
+1. Clone the repository and install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Create a `.env` file in the project root with the following variables:
+   ```
+   DATABASE_URL=mongodb://your-connection-string
+   PORT=5000
+   NODE_ENV=development
+   ```
+
+3. Start the application:
+   ```bash
+   npm start
+   ```
+   Or for development with live reload:
+   ```bash
+   npm run dev
+   ```
+
+> Note: `npm run dev` uses `nodemon`. If you don't have it installed globally, install it locally with `npm install -g nodemon`.
 
 ## Project structure
 
@@ -41,6 +60,29 @@ A simple backend API for managing users, products, and product reviews.
 - `src/schema` - request validation schemas
 - `src/middlewares` - custom Express middleware
 - `src/app.js` - global middleware setup and app export
+
+## API Endpoints
+
+### Users
+- `GET /api/users` - Get all users
+- `GET /api/users/:id` - Get user by ID
+- `POST /api/users` - Create a new user
+- `PUT /api/users/:id` - Update a user
+- `DELETE /api/users/:id` - Delete a user
+
+### Products
+- `GET /api/products` - Get all products
+- `GET /api/products/:id` - Get product by ID
+- `POST /api/products` - Create a new product
+- `PUT /api/products/:id` - Update a product
+- `DELETE /api/products/:id` - Delete a product
+
+### Reviews
+- `GET /api/reviews` - Get all reviews
+- `GET /api/reviews/:id` - Get review by ID
+- `POST /api/reviews` - Create a new review
+- `PUT /api/reviews/:id` - Update a review
+- `DELETE /api/reviews/:id` - Delete a review
 
 ## Request timing middleware
 
