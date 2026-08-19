@@ -35,6 +35,7 @@ const productSchema = new mongoose.Schema(
     },
     availability: {
         type: String,
+        required: true,
         enum: ["available", "out-of-stock"],
         default: "available"
     },

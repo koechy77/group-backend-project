@@ -61,6 +61,7 @@ exports.updateUser = async (req, res) => {
 
     const user = await User.findByIdAndUpdate(req.params.userId, req.body, {
       new: true,
+      runValidators: true
     });
 
     if (!user) {

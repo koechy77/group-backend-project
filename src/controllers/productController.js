@@ -5,7 +5,8 @@ exports.createProduct = async (req, res) => {
     console.log("requested at:", req.requestTime); // Log the request time for debugging
     console.log("Request body:", req.body); // Log the request body for debugging
 
-    const { name, description, price, category } = req.body;
+    const { name, description, price, category, quantity, availability } =
+      req.body;
     const existingProduct = await Product.findOne({ name });
 
     if (existingProduct) {
@@ -14,7 +15,8 @@ exports.createProduct = async (req, res) => {
 
     const product = new Product({
       ...req.body,
-      coverImage: req.file ? req.file.path : undefined, // Use the uploaded file path if available
+      coverImage: req.files?.coverImage?.[0]?.path || undefined, // Use the uploaded cover image file path if available
+      images: req.files?.images?.map((file) => file.path) || [], // Use the uploaded image file paths if available
     });
 
     await product.save();
@@ -31,7 +33,7 @@ exports.getAllProducts = async (req, res) => {
 
     const products = await Product.find().populate({
       path: "reviews",
-      populate: { path: "userID" } // users associated with each review
+      populate: { path: "userID" }, // users associated with each review
     });
     res.status(200).json(products);
   } catch (err) {
@@ -47,8 +49,14 @@ exports.getProduct = async (req, res) => {
 
     const product = await Product.findById(req.params.productId).populate({
       path: "reviews",
-      populate: { path: "userID" } // users associated with each review
+      populate: { path: "userID" }, // users associated with each review
     });
+
+    if (!product) {
+      return res.status(404).json({
+        message: "product not found",
+      });
+    }
     res.status(200).json(product);
   } catch (err) {
     console.error("Error fetching product:", err);
@@ -59,10 +67,10 @@ exports.getProduct = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   try {
     console.log("requested at:", req.requestTime);
-    console.log("requested id:", req.params.id);
+    console.log("requested id:", req.params.productId);
     console.log("Request body:", req.body);
 
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    const product = await Product.findByIdAndUpdate(req.params.productId, req.body, {
       new: true,
       runValidators: true,
     });
