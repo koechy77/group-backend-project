@@ -6,6 +6,10 @@ const {
   getProduct,
   updateProduct,
   deleteProduct,
+  aliasTopProducts,
+  getProductStats,
+  getCategoryStats,
+  getTopRatedProducts,
 } = require("../controllers/productController");
 
 const upload = require("../middlewares/productMiddleware");
@@ -22,7 +26,15 @@ router
     ]),
     createProduct,
   );
+router.route("/top-5-cheap").get(aliasTopProducts, getAllProducts);
+router.route("/stats").get(getProductStats);
+router.route("/category-stats").get(getCategoryStats);
+router.route("/top-rated").get(getTopRatedProducts);
 
-router.route("/:productId").get(getProduct).put(updateProduct).delete(deleteProduct);
+router
+  .route("/:productId")
+  .get(getProduct)
+  .put(updateProduct)
+  .delete(deleteProduct);
 
 module.exports = router;

@@ -52,7 +52,7 @@ const productSchema = new mongoose.Schema(
     }
   },
 
-  { timestamps: true },
+  { timestamps: true, id: false },
 );
 
 productSchema.virtual("reviews", {

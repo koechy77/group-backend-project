@@ -6,7 +6,7 @@ const {
   updateReview,
   deleteReview,
 } = require("../controllers/reviewController");
-const router = express.Router();
+const router = express.Router({ mergeParams: true});
 
 router.route("/").get(getProductReviews).post(createReview);
 router.route("/:reviewId").get(getReview).patch(updateReview).delete(deleteReview);

@@ -5,10 +5,10 @@ exports.createReview = async (req, res) => {
     console.log("requested at:", req.requestTime); // Log the request time for debugging
     console.log("Request body:", req.body); // Log the request body for debugging
 
-    const { title, comment, rating, userID } = req.body;
     const newReview = await Review.create({
       ...req.body,
-      productID: req.params.productId, // Use the productId from the route parameter
+      // userID: req.params.userId,
+      productID: req.params.productId,
     });
     res.status(201).json(newReview);
   } catch (err) {
@@ -22,8 +22,7 @@ exports.getProductReviews = async (req, res) => {
     console.log("requested at:", req.requestTime); // Log the request time for debugging
 
     const reviews = await Review.find({ productID: req.params.productId }) // get reviews attached to each product
-      .populate("userID")
-      .populate("productID");
+      .populate({ path: "userID", select: "username _id" });
 
     if (reviews.length === 0) {
       return res.status(404).json({ message: "No reviews found" });
@@ -68,7 +67,7 @@ exports.updateReview = async (req, res) => {
       req.body,
       {
         new: true,
-        runValidators: true
+        runValidators: true,
       },
     );
 

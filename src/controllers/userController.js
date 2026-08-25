@@ -6,13 +6,7 @@ exports.createUser = async (req, res) => {
     console.log("requested at:", req.requestTime); // Log the request time for debugging
     console.log("Request body:", req.body); // Log the request body for debugging
 
-    const { username, email, password, role: admin } = req.body;
-    const existingUser = await User.findOne({ username });
-
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
-    }
-    await User.create(req.body);
+    await User.create({ ...req.body, role: admin });
     res.status(201).json({ message: "User created successfully" });
   } catch (err) {
     console.error("Error creating user:", err);
