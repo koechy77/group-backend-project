@@ -27,13 +27,14 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-// password hashing middleware
+// password hashing mongoDB middleware
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
   } else {
     // Hash the password before saving
     const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);
+    next();
   }
 });
 
