@@ -1,5 +1,3 @@
-require("dotenv").config();
-
 const errorHandler = (err, req, res, next) => {
   console.error(err);
 
@@ -17,14 +15,14 @@ const errorHandler = (err, req, res, next) => {
   if (err.isOperational) {
     // Known/application error
     return res.status(err.statusCode).json({
-      status: err.status,
+      status: err.status || "error",
       message: err.message,
     });
   }
 
   // unknown/technical error
   return res.status(500).json({
-    status: error,
+    status: "error",
     message: "something went wrong",
   });
 };

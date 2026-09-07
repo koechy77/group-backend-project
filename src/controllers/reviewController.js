@@ -1,4 +1,4 @@
-const AppError = require("../../utils/Class/appError");
+const AppError = require("../../utils/appError");
 const Review = require("../models/reviewModel");
 
 exports.createReview = async (req, res) => {
@@ -48,7 +48,7 @@ exports.updateReview = async (req, res) => {
     { _id: req.params.reviewId, productID: req.params.productId },
     req.body,
     {
-      returnDocument: 'after',
+      returnDocument: "after",
       runValidators: true,
     },
   );
@@ -71,5 +71,8 @@ exports.deleteReview = async (req, res) => {
   if (!review) {
     throw new AppError("Review not found", 404);
   }
-  res.status(200).json({ message: "Review deleted successfully" });
+  res.status(204).json({
+    status: "success",
+    message: null,
+  });
 };

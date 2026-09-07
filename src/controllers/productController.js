@@ -1,6 +1,6 @@
 const Product = require("../models/productModel");
 const APIFeatures = require("../../utils/Class/APIFeatures");
-const AppError = require("../../utils/Class/appError");
+const AppError = require("../../utils/appError");
 
 exports.aliasTopProducts = (req, res, next) => {
   req.apiQuery = {
@@ -92,8 +92,9 @@ exports.deleteProduct = async (req, res) => {
     throw new AppError("Product not found", 404);
   }
 
-  res.status(200).json({
-    message: "Product deleted successfully",
+  res.status(204).json({
+    status: "success",
+    message: null,
   });
 };
 

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema(
   {
@@ -16,6 +16,19 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+      minlength: 8,
+      maxlength: 20,
+      select: false, // Exclude password from query results by default
+    },
+    passwordConfirm: {
+      type: String,
+      required: true,
+      validate: {
+        validator: function (value) {
+          return value === this.password;
+        },
+        message: "Passwords are not the same!",
+      },
     },
     role: {
       type: String,
@@ -30,12 +43,20 @@ const userSchema = new mongoose.Schema(
 // password hashing mongoDB middleware
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
+    return next();
   } else {
     // Hash the password before saving
     const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);
-    next();
+    this.passwordConfirm = undefined; // Remove passwordConfirm field before saving
   }
 });
+
+userSchema.methods.correctPassword = function (
+  candidatePassword,
+  storedPassword,
+) {
+  return bcrypt.compare(candidatePassword, storedPassword);
+};
 
 module.exports = userSchema;

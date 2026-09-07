@@ -1,6 +1,6 @@
 # Group Backend Project
 
-A simple backend API for managing users, products, and product reviews.
+A REST API for managing users, products, and product reviews.
 
 ## Features
 
@@ -11,6 +11,8 @@ A simple backend API for managing users, products, and product reviews.
 - Validation via schema files
 - MongoDB persistence using Mongoose
 - Request metadata tracking for debugging and timing
+- JWT-based signup, login, and protected user routes
+- Product image uploads with Multer
 
 ## Tech stack
 
@@ -24,7 +26,7 @@ A simple backend API for managing users, products, and product reviews.
 ### Prerequisites
 
 - Node.js (v14 or higher)
-- MongoDB instance (local or cloud)
+- MongoDB instance (local or Atlas)
 
 ### Installation
 
@@ -35,9 +37,11 @@ A simple backend API for managing users, products, and product reviews.
 
 2. Create a `.env` file in the project root with the following variables:
    ```
-   DATABASE_URL=mongodb://your-connection-string
-   PORT=5000
+    DATABASE_URL=mongodb://your-connection-string
+   PORT=6000
    NODE_ENV=development
+    JWT_SECRET=your-secret-key
+    JWT_EXPIRES_IN=90d
    ```
 
 3. Start the application:
@@ -64,52 +68,61 @@ A simple backend API for managing users, products, and product reviews.
 ## API Endpoints
 
 ### Users
-- `GET /api/users` - Get all users
-- `GET /api/users/:id` - Get user by ID
-- `POST /api/users` - Create a new user
-- `PUT /api/users/:id` - Update a user
-- `DELETE /api/users/:id` - Delete a user
+
+- `GET /api/v1/users` - Get all users
+- `GET /api/v1/users/:userId` - Get a user by ID (requires authentication)
+- `GET /api/v1/users/profile` - Get the authenticated user's profile
+- `PATCH /api/v1/users/profile` - Update the authenticated user's profile
+- `DELETE /api/v1/users/profile` - Delete the authenticated user's account
+- `DELETE /api/v1/users/:userId` - Delete a user by ID (requires authentication)
+
+### Authentication
+
+- `POST /api/v1/auth/signup` - Create a user and return a JWT
+- `POST /api/v1/auth/login` - Authenticate a user and return a JWT
+
+Protected endpoints expect the token in the request header:
+
+```http
+Authorization: Bearer <token>
+```
 
 ### Products
-- `GET /api/products` - Get all products
-- `GET /api/products/:id` - Get product by ID
-- `POST /api/products` - Create a new product
-- `PUT /api/products/:id` - Update a product
-- `DELETE /api/products/:id` - Delete a product
+
+- `GET /api/v1/products` - Get all products
+- `GET /api/v1/products/:productId` - Get product by ID
+- `POST /api/v1/products` - Create a new product
+- `PUT /api/v1/products/:productId` - Update a product
+- `DELETE /api/v1/products/:productId` - Delete a product
+- `GET /api/v1/products/top-5-cheap` - Get the five cheapest products
+- `GET /api/v1/products/stats` - Get product statistics
+- `GET /api/v1/products/category-stats` - Get category statistics
+- `GET /api/v1/products/top-rated` - Get top-rated products
+
+Product creation accepts `multipart/form-data` with an optional `coverImage` field and up to five `images` fields.
 
 ### Reviews
-- `GET /api/reviews` - Get all reviews
-- `GET /api/reviews/:id` - Get review by ID
-- `POST /api/reviews` - Create a new review
-- `PUT /api/reviews/:id` - Update a review
-- `DELETE /api/reviews/:id` - Delete a review
+
+- `GET /api/v1/:productId/reviews` - Get all reviews
+- `GET /api/v1/:productId/reviews/:reviewId` - Get a review by ID
+- `POST /api/v1/:productId/reviews` - Create a new review
+- `PATCH /api/v1/:productId/reviews/:reviewId` - Update a review
+- `DELETE /api/v1/:productId/reviews/:reviewId` - Delete a review
 
 ## Request timing middleware
 
-The app includes a global custom middleware that attaches request metadata to each request object before the route controller runs.
+The app includes a global custom middleware that attaches request time to each request object before the route controller runs.
 
 ```js
 app.use((req, res, next) => {
-    req.requestTime = new Date();
-    req.requestMethod = req.method;
-    req.requestPath = req.originalUrl;
-    req.requestStartedAt = Date.now();
-
-    res.on('finish', () => {
-        const elapsedMs = Date.now() - req.requestStartedAt;
-        console.log(`${req.requestMethod} ${req.requestPath} - ${elapsedMs}ms`);
-    });
-
-    next();
+  req.requestTime = new Date();
+  next();
 });
 ```
 
 This middleware is useful because:
 
 - it records when a request started
-- it captures the HTTP method and URL
-- it logs how long the request took before finishing
-- it is available to every controller through `req`
 
 Important: these values are stored on the current request object, not as a shared top-level variable. That means each request gets its own values and nothing is overwritten by another request.
 
@@ -119,8 +132,6 @@ Example usage in a controller:
 exports.getAllUsers = async (req, res) => {
   try {
     console.log(req.requestTime);
-    console.log(req.requestMethod);
-    console.log(req.requestPath);
 
     const users = await User.find();
     res.status(200).json(users);
@@ -142,6 +153,7 @@ This works because Express passes the same `req` object through the middleware a
 
 - `src/config/db.js` contains the MongoDB connection logic
 - `src/app.js` configures global middleware and exports the Express app
-- `server.js` is expected to mount `src/app.js` and start the HTTP server
+- `src/server.js` connects to MongoDB and starts the HTTP server
 - `src/routes/reviewRoutes.js` contains review route wiring for the review endpoints
+- `utils/appError.js` contains the application error class used by the error handler
 

@@ -1,11 +1,12 @@
 const express = require("express");
 
+const authRouter = require("./routes/authRoutes");
 const userRouter = require("./routes/userRoutes");
 const productRouter = require("./routes/productRoutes");
 const reviewRouter = require("./routes/reviewRoutes");
 
 const morgan = require("morgan");
-const errorHandler = require("../utils/middleware/errorHandler");
+const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use((req, res, next) => {
 });
 
 // mounted routes
+app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/products", productRouter);
 app.use("/api/v1/:productId/reviews", reviewRouter);
